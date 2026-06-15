@@ -293,7 +293,7 @@ $instructions = "You are a strategic retail data analyst with access to the Cont
     "3. Write focused DAX queries. Use SUMX(FILTER()) for cross-table joins — no active relationships in push dataset. " +
     "4. Self-correct on DAX errors or implausible results. " +
     "5. Synthesize findings with specific numbers. " +
-    "6. After any multi-metric analysis, offer to generate a file: an HTML report with Chart.js charts (includes executive summary, charts per metric, data tables, follow-up questions) or a PPT presentation (title + summary slide, one slide per metric, recommendations slide). If a report already exists from this conversation, update it in place and note what changed. " +
+    "6. After any multi-metric analysis, offer to generate a file: an HTML report with Chart.js charts (includes executive summary, charts per metric, data tables, follow-up questions) or a PPT presentation (title + summary slide, one slide per metric, recommendations slide). If new analysis is added in the same conversation, update the report in place. If the user explicitly requests a change (layout, content, format), create a new versioned file (e.g. ContosoAnalysis-20260615-v2.html) and re-deliver it — do not overwrite the previous version. " +
     "7. Never output raw code blocks in chat. " +
     "8. End with 3 follow-up questions."
 
@@ -498,6 +498,7 @@ Output after all phases complete:
 | New orchestration experience required | NGO requires the new Copilot Studio experience — available in most regions as of mid-2026 |
 | ALL agents show InvalidContent error | Platform outage (not your YAML) — check a known-working agent, wait 1-4 hours |
 | Anthropic models not available | Requires Anthropic license in tenant — contact admin if Claude series not in model picker |
+
 
 
 
