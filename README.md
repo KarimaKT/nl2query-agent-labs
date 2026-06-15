@@ -139,9 +139,17 @@ A synthetic 13-table Power BI push dataset built for NL2Query evaluation. Determ
 This story makes the evaluation questions non-trivial — the right answers require multi-step DAX, cross-table joins (no active relationships — push dataset), and time-series aggregation.
 
 ```bash
+# 1. Sign in to Azure (required — the script gets the Power BI token from az CLI)
+az login
+
+# 2. Install Python dependencies
 pip install requests faker
+
+# 3. Run the dataset builder
+#    workspace_id: your Power BI workspace GUID (create one at app.powerbi.com if needed)
+#    tenant_id: optional — only needed if az login picked the wrong tenant
 python dataset/build_contoso_dataset.py <workspace_id> [tenant_id]
-# Outputs: dataset_id.txt
+# Outputs: dataset_id.txt  (read by the deploy skills to wire up the agent)
 ```
 
 ---
@@ -185,7 +193,7 @@ The Fabric Analyst agent uses a **column-aware adaptive TOPN** pattern:
 
 4. Calculate N
    N = floor(target_chars / estimated_row_width), clamped to [50, 200]
-   target_chars default = 100,000 (adjustable per model context size)
+   target_chars default = 100,000 (instruction-guided target — not a platform-enforced limit; adjustable per model)
 
 5. Apply: EVALUATE TOPN(N, ...)
 
@@ -202,10 +210,10 @@ The Fabric Analyst agent uses a **column-aware adaptive TOPN** pattern:
 
 | Concern | CGO (TableTalk) | NGO (Fabric Analyst) |
 |---|---|---|
-| Where limit is enforced | Power Automate flow (100 rows / 30K chars) | Agent reasoning loop (adaptive TOPN) |
+| Where limit is enforced | Power Automate flow (hard 100 rows / 30K chars — enforced in flow code) | Agent reasoning (instruction-guided target — platform context limit not publicly specified) |
 | Silent truncation | Yes — model doesn't know | No — model controls the limit |
 | Per-column awareness | No | Yes — estimates from selected columns only |
-| Model context adaptation | No | Yes — target_chars adjustable per model |
+| Model context adaptation | No | Yes — target_chars (default 100K, instruction-guided — not a platform limit) |
 | DAX strategy guidance | In flow description | In agent instructions |
 | Requires model reasoning | No | Yes — instructions must be explicit |
 | Consistency | High (enforced) | Depends on instruction quality |
