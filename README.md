@@ -164,7 +164,7 @@ TableTalk truncates results **in the Power Automate flow**, before the model eve
 
 ```
 ExecuteDatasetQuery action
-  → success scope: take first MIN(100 rows, 30,000 chars)
+  → success scope: take first MIN(100 rows, 100,000 chars)
   → failure scope: return error message
 ```
 
@@ -191,7 +191,7 @@ The Fabric Analyst agent uses a **column-aware adaptive TOPN** pattern:
 
 4. Calculate N
    N = floor(target_chars / estimated_row_width), clamped to [50, 200]
-   target_chars default = 30,000 (adjustable per model context size)
+   target_chars default = 100,000 (adjustable per model context size)
 
 5. Apply: EVALUATE TOPN(N, ...)
 
@@ -265,5 +265,6 @@ Apache 2.0 — see [LICENSE](LICENSE).
 ---
 
 *CGO and NGO are working terms coined by the Microsoft CAT team to describe the two Copilot Studio orchestration architectures. They are not official product names.*
+
 
 
