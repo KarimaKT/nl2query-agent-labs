@@ -1,13 +1,15 @@
 ---
 name: "fabric-analyst-deploy"
-description: "Full end-to-end deployment skill for Fabric Analyst (NGO / new Copilot Studio orchestrator). Creates agent via PAC CLI + Dataverse API — NO manual UI step needed. Sets up ContosoRetail dataset, adds Power BI connector tools via CDP browser, adds skills, publishes, tests with screenshot. Asks 4 questions upfront, skips phases that already exist, lists what NGO needs to get better."
+description: "End-to-end deployment skill for the Fabric Analyst agent (New Generative Orchestrator). Deploys agent via PAC CLI + Dataverse API. Generates ContosoRetail push dataset (13 tables), configures agent instructions, adds Power BI tools via CDP browser automation, adds full schema and DAX pattern skills via Dataverse API, publishes, and tests. Skips phases that already exist. See /copilot-studio-new-orchestrator for architecture reference."
 ---
 
 # Fabric Analyst — Full Deployment Skill (NGO)
 
-Deploy the **Fabric Analyst** agent (NGO architecture) into any Power Platform environment with Copilot Studio. Fully autonomous after 4 upfront questions.
+Deploy the **Fabric Analyst** agent (New Generative Orchestrator architecture) into any Power Platform environment with Copilot Studio. Fully autonomous after 4 upfront questions.
 
-**No manual UI agent creation needed.** The agent shell is created via PAC CLI + Dataverse API. Only the Tools and Skills steps require a CDP browser session (UI-only operations in Copilot Studio).
+**What is automated:** Agent shell creation (PAC CLI + Dataverse API), dataset generation, agent configuration and instructions (Dataverse API), Copilot Studio agent skills with full ContosoRetail schema (Dataverse API), publishing.
+
+**What requires a CDP browser session:** Adding connector Tools (Power BI) — Copilot Studio does not expose a CLI or API for this step. The skill sets up a dedicated Edge profile for CDP and automates the UI interaction. On first use you sign in once; subsequent runs reuse the profile.
 
 **Architecture:** NGO uses `CLICopilotRecognizer` + `cliagent-1.0.0`. No topics — only Tools, Skills, and a reasoning loop. See `/copilot-studio-new-orchestrator` and `/ngo-nl2query-patterns` for format reference and known bugs.
 
@@ -203,15 +205,31 @@ Write-Host "dim_customers rows: $($r.results[0].tables[0].rows)"
 
 ### PHASE 2b — build_dataset.py
 
-Generate `$workDir\build_dataset.py` from the CAT reference implementation. The script:
-- Creates a 13-table ContosoRetail push dataset schema via Power BI REST API
-- Generates 500 rows per table using Faker (run `pip install faker requests`)
-- Pushes all rows to the dataset
-- Writes dataset ID to `$workDir\dataset_id.txt`
+The dataset generator is included in this repo at `dataset/build_contoso_dataset.py`.
 
-Tables: `dim_customers`, `dim_products`, `dim_stores`, `dim_employees`, `fact_orders`, `fact_order_items`, `fact_returns`, `fact_inventory`, `fact_marketing_campaigns`, `fact_website_sessions`, `fact_support_tickets`, `fact_supplier_performance`, `fact_store_traffic`.
+```powershell
+# Copy it to your working directory
+Copy-Item "$repoRoot\dataset\build_contoso_dataset.py" "$workDir\build_dataset.py"
 
-If the user already has a Power BI dataset they want to use, skip Phase 2 entirely and provide `$workspaceId` and `$datasetId` directly.
+# Install dependencies (once)
+pip install faker requests
+
+# Run — uses your Az CLI token automatically
+python "$workDir\build_dataset.py" $workspaceId $tenantId
+# Outputs: $workDir\dataset_id.txt
+$datasetId = Get-Content "$workDir\dataset_id.txt"
+Write-Host "Dataset ID: $datasetId"
+```
+
+Where `$repoRoot` is the root of your cloned `nl2query-agent-labs` repo. If you haven't cloned it:
+```powershell
+git clone https://github.com/KarimaKT/nl2query-agent-labs "$workDir\repo"
+$repoRoot = "$workDir\repo"
+```
+
+The script creates all 13 ContosoRetail tables (dim_customers, dim_products, dim_stores, dim_employees, fact_orders, fact_order_items, fact_returns, fact_inventory, fact_marketing_campaigns, fact_website_sessions, fact_support_tickets, fact_supplier_performance, fact_store_traffic) with 500 rows each, deterministic (seed=42).
+
+If you already have a Power BI dataset to use, skip Phase 2 and set `$workspaceId` and `$datasetId` directly.
 
 ---
 
@@ -398,11 +416,251 @@ $dvToken = Get-DVToken
 $h = @{ Authorization = "Bearer $dvToken"; "Content-Type" = "application/json" }
 $agentSchemaName = (Invoke-RestMethod "$orgUrl/api/data/v9.2/bots?`$filter=botid eq '$botId'&`$select=schemaname" -Headers $h).value[0].schemaname
 
-# Add schema skill
-Add-AgentSkill "schema-definitions" "ContosoRetail schema — tables, column types, join patterns, business rules" "Dataset type: Power BI push dataset. No active relationships — use SUMX(FILTER()) for joins."
+# Build schema skill content
+$schemaContent = @"
+## ContosoRetail Schema
 
-# Add DAX patterns skill
-Add-AgentSkill "dax-patterns" "Common DAX patterns for NL2Query over ContosoRetail" "Revenue by segment: SUMX(FILTER(fact_orders, fact_orders[customer_id] = dim_customers[customer_id]), fact_orders[order_value])"
+Dataset type: Power BI push dataset. NO active relationships between tables.
+For ALL cross-table joins use SUMX(FILTER()) pattern — RELATED() and USERELATIONSHIP() do not work.
+
+WorkspaceID and DatasetID are in your instructions.
+
+## Dimension Tables
+
+### dim_customers
+- customer_id (string, PK) — e.g. "CUST0001"
+- customer_name (string)
+- customer_segment (string) — values: "New", "Regular", "VIP", "At-Risk"
+- email (string)
+- region (string) — values: "Northeast", "Southeast", "Midwest", "Southwest", "West"
+- signup_date (datetime)
+- lifetime_value (decimal)
+
+### dim_products
+- product_id (string, PK) — e.g. "PROD001"
+- product_name (string)
+- category (string) — values: "Electronics", "Beauty", "Apparel", "Sports & Outdoors", "Home & Garden"
+- unit_cost (decimal)
+- unit_price (decimal)
+- margin_pct (decimal) — gross margin as decimal (e.g. 0.598 = 59.8%)
+
+### dim_stores
+- store_id (string, PK) — e.g. "ST01"
+- store_name (string)
+- region (string) — same values as dim_customers region
+- store_type (string) — "Flagship", "Standard", "Outlet"
+- manager_name (string)
+
+### dim_employees
+- employee_id (string, PK)
+- employee_name (string)
+- department (string)
+- store_id (string, FK → dim_stores)
+- performance_rating (decimal 1-5)
+- quota_attainment (decimal) — NOTE: may not always be populated
+
+## Fact Tables
+
+### fact_orders
+- order_id (string, PK) — e.g. "O0001"
+- customer_id (string, FK → dim_customers)
+- store_id (string, FK → dim_stores)
+- order_date (datetime)
+- order_value (decimal) — total order value
+- channel (string) — "In-Store", "Online", "Mobile App"
+- region (string)
+
+### fact_order_items
+- order_item_id (string, PK)
+- order_id (string, FK → fact_orders)
+- product_id (string, FK → dim_products)
+- quantity (integer)
+- unit_price (decimal)
+- discount_pct (decimal)
+
+### fact_returns
+- return_id (string, PK)
+- order_item_id (string, FK → fact_order_items)
+- return_date (datetime)
+- return_reason (string)
+- customer_id (string, FK → dim_customers)
+- product_id (string, FK → dim_products)
+
+### fact_inventory
+- inventory_id (string, PK)
+- store_id (string, FK → dim_stores)
+- product_id (string, FK → dim_products)
+- stock_level (integer)
+- reorder_point (integer)
+- stockout_flag (string) — "Yes" or "No"
+- last_restocked (datetime)
+
+### fact_marketing_campaigns
+- campaign_id (string, PK)
+- campaign_name (string)
+- channel (string) — "Email", "Social", "Display"
+- start_date (datetime)
+- end_date (datetime)
+- campaign_cost (decimal)
+- revenue_lift (decimal)
+- net_revenue_lift (decimal)
+- roi (decimal) — net_revenue_lift / campaign_cost
+
+### fact_website_sessions
+- session_id (string, PK)
+- customer_id (string, FK → dim_customers)
+- session_date (datetime)
+- pages_viewed (integer)
+- conversion_flag (string) — "Yes" or "No"
+- channel (string)
+
+### fact_support_tickets
+- ticket_id (string, PK)
+- customer_id (string, FK → dim_customers)
+- open_date (datetime)
+- close_date (datetime)
+- issue_category (string)
+- resolved_flag (string) — "Yes" or "No"
+- campaign_id (string, FK → fact_marketing_campaigns, nullable)
+
+### fact_supplier_performance
+- supplier_id (string, PK) — e.g. "SUP01"
+- supplier_name (string)
+- product_id (string, FK → dim_products)
+- on_time_flag (string) — "Yes" or "No"
+- quality_score (decimal 0-10)
+- po_value (decimal)
+
+### fact_store_traffic
+- traffic_id (string, PK)
+- store_id (string, FK → dim_stores)
+- traffic_date (datetime)
+- visitor_count (integer)
+- conversion_rate (decimal)
+- day_of_week (string)
+
+## Join Patterns (no active relationships — always use SUMX/FILTER)
+
+Revenue by customer segment:
+SUMX(FILTER(fact_orders, fact_orders[customer_id] = dim_customers[customer_id]), fact_orders[order_value])
+
+Product category margin:
+AVERAGEX(FILTER(dim_products, dim_products[category] = "Beauty"), dim_products[margin_pct])
+
+Return rate by category:
+DIVIDE(
+  COUNTROWS(FILTER(fact_returns, CALCULATE(VALUES(dim_products[category])) = "Electronics")),
+  COUNTROWS(fact_order_items)
+)
+
+Supplier on-time rate:
+DIVIDE(
+  COUNTROWS(FILTER(fact_supplier_performance, fact_supplier_performance[on_time_flag] = "Yes")),
+  COUNTROWS(fact_supplier_performance)
+)
+
+Store traffic conversion:
+AVERAGEX(FILTER(fact_store_traffic, fact_store_traffic[store_id] = dim_stores[store_id]), fact_store_traffic[conversion_rate])
+"@
+
+# Build DAX patterns skill content
+$daxContent = @"
+## DAX Patterns for ContosoRetail NL2Query
+
+All patterns assume NO active relationships. Use SUMX(FILTER()) for every cross-table calculation.
+
+## Schema exploration (always run first on unfamiliar table)
+EVALUATE TOPN(3, dim_customers)
+EVALUATE TOPN(3, fact_orders)
+
+## Revenue aggregations
+
+Revenue by customer segment:
+SUMMARIZECOLUMNS(
+  dim_customers[customer_segment],
+  "Revenue", SUMX(FILTER(fact_orders, fact_orders[customer_id] = dim_customers[customer_id]), fact_orders[order_value]),
+  "Order_Count", COUNTROWS(FILTER(fact_orders, fact_orders[customer_id] = dim_customers[customer_id]))
+)
+
+Revenue by region:
+SUMMARIZECOLUMNS(
+  fact_orders[region],
+  "Revenue", SUM(fact_orders[order_value]),
+  "Orders", COUNTROWS(fact_orders)
+)
+
+Revenue by channel:
+SUMMARIZECOLUMNS(
+  fact_orders[channel],
+  "Revenue", SUM(fact_orders[order_value])
+)
+
+## Product and category analysis
+
+Category margin:
+SUMMARIZECOLUMNS(
+  dim_products[category],
+  "Avg_Margin_Pct", AVERAGEX(dim_products, dim_products[margin_pct]),
+  "Product_Count", COUNTROWS(dim_products)
+)
+
+Return rate by category (cross-table):
+SUMMARIZECOLUMNS(
+  dim_products[category],
+  "Return_Count", COUNTROWS(FILTER(fact_returns, CALCULATE(COUNTROWS(FILTER(dim_products, dim_products[product_id] = fact_returns[product_id]))) > 0)),
+  "Item_Count", COUNTROWS(FILTER(fact_order_items, CALCULATE(COUNTROWS(FILTER(dim_products, dim_products[product_id] = fact_order_items[product_id]))) > 0))
+)
+
+## Marketing analysis
+
+Campaign ROI by channel and year:
+SUMMARIZECOLUMNS(
+  fact_marketing_campaigns[channel],
+  "Total_Cost", SUM(fact_marketing_campaigns[campaign_cost]),
+  "Net_Lift", SUM(fact_marketing_campaigns[net_revenue_lift]),
+  "Avg_ROI", AVERAGE(fact_marketing_campaigns[roi])
+)
+
+## Supplier reliability
+
+Supplier on-time delivery rate:
+SUMMARIZECOLUMNS(
+  fact_supplier_performance[supplier_id],
+  "On_Time_Rate", DIVIDE(COUNTROWS(FILTER(fact_supplier_performance, fact_supplier_performance[on_time_flag] = "Yes")), COUNTROWS(fact_supplier_performance)),
+  "Avg_Quality", AVERAGE(fact_supplier_performance[quality_score]),
+  "PO_Value", SUM(fact_supplier_performance[po_value])
+)
+
+## Inventory and stockout
+
+Stockout rate by category (cross-table):
+SUMMARIZECOLUMNS(
+  dim_products[category],
+  "Stockout_Count", COUNTROWS(FILTER(fact_inventory, fact_inventory[stockout_flag] = "Yes" && CALCULATE(COUNTROWS(FILTER(dim_products, dim_products[product_id] = EARLIER(fact_inventory[product_id])))) > 0)),
+  "Total_Count", COUNTROWS(fact_inventory)
+)
+
+## Customer lifetime value
+
+LTV by segment:
+SUMMARIZECOLUMNS(
+  dim_customers[customer_segment],
+  "Avg_LTV", AVERAGEX(dim_customers, dim_customers[lifetime_value]),
+  "Customer_Count", COUNTROWS(dim_customers),
+  "Total_LTV", SUMX(dim_customers, dim_customers[lifetime_value])
+)
+
+## Self-correction patterns
+
+If a query returns all equal values across groups, the join is likely wrong.
+Try: SUMX(FILTER(fact_table, fact_table[fk_col] = EARLIER(dim_table[pk_col])), fact_table[measure])
+instead of: CALCULATE(SUM(fact_table[measure]), FILTER(...))
+
+If TOPN returns columns you don't expect, note the actual column names before aggregating.
+"@
+
+Add-AgentSkill "schema-definitions" "ContosoRetail dataset schema — all 13 tables, column types, and join patterns" $schemaContent
+Add-AgentSkill "dax-patterns" "DAX patterns for ContosoRetail — revenue, categories, marketing ROI, supplier reliability, LTV" $daxContent
 ```
 
 **Future:** Once PAC CLI supports `translations/`, skills become YAML files in the repo — no Dataverse API needed. The YAML format is already defined (see `/ngo-nl2query-patterns` skill).

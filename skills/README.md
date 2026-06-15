@@ -6,6 +6,14 @@ Built by the Microsoft CAT team. CGO reference agent (TableTalk with Fabric) by 
 
 ---
 
+## Before you start
+
+The **deploy skills** (`/tabletalk-fabric-deploy`, `/fabric-analyst-deploy`) are self-contained — they include all commands and content needed to deploy a working agent. Read the prerequisites section of each skill before running.
+
+The **pattern skills** (`/cgo-nl2query-patterns`, `/ngo-nl2query-patterns`, `/copilot-studio-new-orchestrator`) are reference materials. You do not need to read them before deploying, but they explain the design decisions and are essential if you want to customize the agents or troubleshoot issues.
+
+---
+
 ## Decision guide
 
 ```
@@ -71,11 +79,13 @@ What you need:
 - No existing agent needed — skill creates the agent programmatically
 
 What it does:
-- Creates ContosoRetail Power BI push dataset (or reuses existing)
-- Creates NGO agent shell via PAC CLI + solution import
-- Configures instructions + model via Dataverse API (avoids PAC CLI push bug)
-- Adds 3 Power BI tools via CDP browser automation. Adds skills via Dataverse API (no browser needed)
-- Publishes, tests, screenshots
+- Clones the nl2query-agent-labs repo (for the dataset script) if not already present
+- Creates ContosoRetail Power BI push dataset via Python script (or reuses existing)
+- Creates New Generative Orchestrator agent shell via PAC CLI + solution import
+- Configures instructions + model via Dataverse API (PAC CLI push crashes on this architecture — see /copilot-studio-new-orchestrator Section 3)
+- Adds 3 Power BI connector tools via CDP browser automation
+- Adds full ContosoRetail schema skill and DAX patterns skill via Dataverse API
+- Publishes, tests, takes screenshot
 
 What it outputs: deployed NGO agent, 20 test questions, LEARNINGS.md, screenshot
 

@@ -42,7 +42,7 @@ From the June 2026 run: CGO scored 94/95 (A+), NGO scored 84/95 (B, adjusted ~88
 
 ### 4. NL2Query patterns and New Generative Orchestrator reference
 
-**Reference skills** covering everything we learned building and evaluating these agents:
+**Reference skills** — not needed to run the deploy skills, but essential for understanding design decisions, troubleshooting, and customization:
 
 - **`/ngo-nl2query-patterns`** — NL2Query / Power BI / DAX specific patterns: adaptive TOPN, DAX rules for push datasets, Power BI tool descriptions, schema probe. References `/copilot-studio-new-orchestrator` for general patterns.
 - **`/cgo-nl2query-patterns`** — CGO: YAML format, flow wiring, smart refresh, _metadata table pattern, output composition.
@@ -101,7 +101,7 @@ Load `skills/tabletalk-fabric-deploy/SKILL.md` into your AI assistant.
 
 **Requires:** Windows + PowerShell, Power Platform environment, Copilot Studio license, Power BI Pro, Az CLI + PAC CLI + Python.
 
-The skill clones Nico's repo, generates the ContosoRetail dataset, imports the solution, updates agent instructions with your dataset IDs, publishes, and tests.
+The skill clones Nico's repo, generates the ContosoRetail dataset (using `dataset/build_contoso_dataset.py` from this repo), imports the solution, updates agent instructions with your dataset IDs, publishes, and tests.
 
 ### Deploy Fabric Analyst (NGO)
 
@@ -122,6 +122,12 @@ Runs both agents against 19 questions, scores with multiple graders, and produce
 Load `skills/cgo-ngo-agent-comparison/SKILL.md` into your AI assistant.
 
 Works with any two Copilot Studio agents (CGO or NGO). Provide agent paths and canvas URLs — the skill explores configs, generates grounded questions, tests, and reports.
+
+### Build your own New Generative Orchestrator agent
+
+Load `skills/copilot-studio-new-orchestrator/SKILL.md` into your AI assistant.
+
+This skill is for building **any** New Generative Orchestrator agent — not just the Fabric use case. It covers the full architecture: YAML format, PAC CLI limitations, Dataverse API for configuration and skills, connector tools vs Workflows, instructions design, file delivery, and known platform gaps. Start here if you are building a new agent from scratch.
 
 
 ---
