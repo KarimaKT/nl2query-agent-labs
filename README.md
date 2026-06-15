@@ -46,7 +46,7 @@ From the June 2026 run: CGO scored 94/95 (A+), NGO scored 84/95 (B, adjusted ~88
 
 - **`/ngo-nl2query-patterns`** — The definitive NGO reference: YAML format, PAC CLI bugs, Dataverse API workarounds, CDP browser automation, instructions design, skills via Dataverse API, CDX outage pattern, CGO vs NGO comparison table.
 - **`/cgo-nl2query-patterns`** — CGO: YAML format, flow wiring, smart refresh, _metadata table pattern, output composition.
-- **`/copilot-studio-new-orchestrator`** — NGO-specific: settings.mcs.yml format, known bugs, /designer/ URL gotcha, Early Release requirement.
+- **`/copilot-studio-new-orchestrator`** — NGO-specific: settings.mcs.yml format, known bugs, /designer/ URL gotcha.
 
 #### NGO Skills — a novel capability
 
@@ -97,7 +97,7 @@ The skill clones Nico's repo, generates the ContosoRetail dataset, imports the s
 
 Load `skills/fabric-analyst-deploy/SKILL.md` into your AI assistant.
 
-**Extra requirement:** Copilot Studio on **Early Release channel** (NGO requires Early Release as of mid-2026) + Anthropic models enabled.
+**Extra requirement:** Copilot Studio environment with the new orchestration experience enabled + Anthropic models enabled.
 
 The skill creates the agent programmatically — no manual UI step needed.
 
@@ -223,7 +223,7 @@ The Fabric Analyst agent uses a **column-aware adaptive TOPN** pattern:
 | Term | Meaning |
 |---|---|
 | **CGO** | Classic Generative Orchestration — Copilot Studio agents using `GenerativeAIRecognizer` + `default-2.1.0` schema, with topics and Power Automate flows. The stable, well-documented architecture. *(Our term)* |
-| **NGO** | New Generative Orchestration — Copilot Studio agents using `CLICopilotRecognizer` + `cliagent-1.0.0` schema, with only Tools and Skills. Available on Early Release channel as of mid-2026. *(Our term)* |
+| **NGO** | New Generative Orchestration — Copilot Studio agents using `CLICopilotRecognizer` + `cliagent-1.0.0` schema, with only Tools and Skills. Available in Copilot Studio environments with the new orchestration experience enabled. *(Our term)* |
 | **NL2Query** | Natural Language to Query — agents that translate user questions into database queries (DAX in this case) and synthesize answers from results |
 | **Push dataset** | A Power BI dataset type where rows are pushed via REST API rather than scheduled refresh from a source. No active relationships — requires SUMX(FILTER()) for cross-table joins |
 | **PAC CLI** | Power Platform CLI — `pac.exe`, used for Copilot Studio agent management (clone, push, publish) |

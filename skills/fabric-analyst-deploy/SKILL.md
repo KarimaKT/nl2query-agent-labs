@@ -5,7 +5,7 @@ description: "Full end-to-end deployment skill for Fabric Analyst (NGO / new Cop
 
 # Fabric Analyst — Full Deployment Skill (NGO)
 
-Deploy the **Fabric Analyst** agent (NGO architecture) into any Power Platform environment with Copilot Studio on Early Release. Fully autonomous after 4 upfront questions.
+Deploy the **Fabric Analyst** agent (NGO architecture) into any Power Platform environment with Copilot Studio. Fully autonomous after 4 upfront questions.
 
 **No manual UI agent creation needed.** The agent shell is created via PAC CLI + Dataverse API. Only the Tools and Skills steps require a CDP browser session (UI-only operations in Copilot Studio).
 
@@ -327,7 +327,7 @@ Navigate to agent Build tab (use envId and botId from Phase 3):
 ```
 https://copilotstudio[.preview].microsoft.com/environments/$envId/agents/$botId
 ```
-Use `.preview.` for Early Release environments, omit `.preview.` for production.
+Use `.preview.` for preview environments, omit `.preview.` for production.
 
 Add these tools via **Tools "+" → Connectors**:
 
@@ -495,7 +495,7 @@ Output after all phases complete:
 | Tools show "Can't connect to this tool" | PA flows fail in some envs — use direct connector actions (this skill does that) |
 | CDP React fields don't update | Use document.execCommand('insertText') not native value setter |
 | Agent URL not found | Use /agents/<botId> NOT /agents/designer/<botId> — /designer/ variant 404s |
-| Early Release channel required | NGO only available on Early Release as of mid-2026 |
+| New orchestration experience required | NGO requires the new Copilot Studio experience — available in most regions as of mid-2026 |
 | ALL agents show InvalidContent error | Platform outage (not your YAML) — check a known-working agent, wait 1-4 hours |
 | Anthropic models not available | Requires Anthropic license in tenant — contact admin if Claude series not in model picker |
 

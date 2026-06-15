@@ -20,7 +20,7 @@ NGO (New Generative Orchestration) is the next-generation agent architecture in 
 - **Reasoning loop**: Plan → Tool call → Observe → Synthesize → Repeat until complete
 
 ### Availability (as of mid-2026)
-- Requires **Copilot Studio Early Release channel** (preview environment)
+- Requires a Copilot Studio environment with the new orchestration experience
 - Models: **Anthropic Claude series** (Opus, Sonnet, Haiku) — requires Anthropic license in the tenant
 - Not yet GA; `cliagent-1.0.0` workspaces have known PAC CLI limitations (see Section 3)
 
@@ -495,7 +495,7 @@ NGO (New Generative Orchestration) is the next-generation agent architecture in 
 - **Reasoning loop**: Plan → Tool call → Observe → Synthesize → Repeat until complete
 
 ### Availability (as of mid-2026)
-- Requires **Copilot Studio Early Release channel** (preview environment)
+- Requires a Copilot Studio environment with the new orchestration experience
 - Models: **Anthropic Claude series** (Opus, Sonnet, Haiku) — requires Anthropic license in the tenant
 - Not yet GA; `cliagent-1.0.0` workspaces have known PAC CLI limitations (see Section 3)
 

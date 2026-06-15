@@ -64,7 +64,7 @@ What it outputs: deployed CGO agent, 20 test questions, LEARNINGS.md with all ID
 
 What you need:
 - Windows + PowerShell
-- Power Platform environment on **Early Release channel** (required for NGO)
+- Power Platform environment with Copilot Studio (NGO requires the new orchestration experience — available in most regions)
 - Copilot Studio license with **Anthropic models enabled**
 - Power BI Pro or higher
 - Az CLI + PAC CLI + Python
@@ -148,7 +148,7 @@ Reference skill — no deployment. Covers:
 ### `/copilot-studio-new-orchestrator`
 **NGO agent format, settings, gotchas, /designer/ URL fix**
 
-Reference skill — covers: YAML schema, known UI bugs (/designer/ URL 404), Early Release requirement, PAC CLI limitations.
+Reference skill — covers: YAML schema, known UI bugs (/designer/ URL 404), PAC CLI limitations.
 
 ---
 
