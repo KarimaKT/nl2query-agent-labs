@@ -64,6 +64,7 @@ The `/ngo-nl2query-patterns` and `/fabric-analyst-deploy` skills both contain th
 ## Repo structure
 
 ```
+
 skills/
   README.md                          ← decision guide, prerequisites, usage
   tabletalk-fabric-deploy/SKILL.md   ← deploy TableTalk (CGO) + ContosoRetail
@@ -78,17 +79,15 @@ dataset/
   build_contoso_dataset.py           ← generates ContosoRetail push dataset
 ```
 
-These skills are designed for [Clawpilot](https://aka.ms/clawpilot) — invoke with `/skill-name` in chat.
-
 ---
 
 ## Quick start
 
+Each skill is a markdown instruction file. Load it into your AI assistant and ask it to perform the task described.
+
 ### Deploy TableTalk (CGO) + ContosoRetail dataset
 
-```
-/tabletalk-fabric-deploy
-```
+Load `skills/tabletalk-fabric-deploy/SKILL.md` into your AI assistant.
 
 **Requires:** Windows + PowerShell, Power Platform environment, Copilot Studio license, Power BI Pro, Az CLI + PAC CLI + Python.
 
@@ -96,9 +95,7 @@ The skill clones Nico's repo, generates the ContosoRetail dataset, imports the s
 
 ### Deploy Fabric Analyst (NGO)
 
-```
-/fabric-analyst-deploy
-```
+Load `skills/fabric-analyst-deploy/SKILL.md` into your AI assistant.
 
 **Extra requirement:** Copilot Studio on **Early Release channel** (NGO requires Early Release as of mid-2026) + Anthropic models enabled.
 
@@ -106,17 +103,13 @@ The skill creates the agent programmatically — no manual UI step needed.
 
 ### Compare the two agents
 
-```
-/cgo-ngo-fabric-comparison
-```
+Load `skills/cgo-ngo-fabric-comparison/SKILL.md` into your AI assistant.
 
 Runs both agents against 19 questions, scores with multiple graders, and produces an interactive HTML comparison report.
 
 ### Compare any two agents
 
-```
-/cgo-ngo-agent-comparison
-```
+Load `skills/cgo-ngo-agent-comparison/SKILL.md` into your AI assistant.
 
 Works with any two Copilot Studio agents (CGO or NGO). Provide agent paths and canvas URLs — the skill explores configs, generates grounded questions, tests, and reports.
 
@@ -151,7 +144,6 @@ python dataset/build_contoso_dataset.py <workspace_id> [tenant_id]
 # Outputs: dataset_id.txt
 ```
 
-
 ---
 
 ## Data volume handling: CGO vs NGO
@@ -163,6 +155,7 @@ One of the most instructive architectural differences between CGO (TableTalk) an
 TableTalk truncates results **in the Power Automate flow**, before the model ever sees the data:
 
 ```
+
 ExecuteDatasetQuery action
   → success scope: take first MIN(100 rows, 100,000 chars)
   → failure scope: return error message
@@ -179,6 +172,7 @@ NGO calls the Power BI connector directly — no flow intermediary. The model is
 The Fabric Analyst agent uses a **column-aware adaptive TOPN** pattern:
 
 ```
+
 1. Schema probe: EVALUATE TOPN(3, tablename)
    → learn column names and typical value widths
 
@@ -221,6 +215,7 @@ The Fabric Analyst agent uses a **column-aware adaptive TOPN** pattern:
 - **CGO** is simpler and more consistent out of the box — the flow enforces safety. Good for production deployments where predictability matters more than control.
 - **NGO** gives the model full visibility into results with no hidden truncation — better for analytical depth, but only if the instructions are well-crafted. Under-specified instructions lead to unpredictable query sizes.
 - The adaptive TOPN pattern can be documented in the agent's `schema-definitions` skill so it applies consistently across all queries without cluttering the top-level instructions.
+
 ---
 
 ## Glossary
@@ -265,6 +260,4 @@ Apache 2.0 — see [LICENSE](LICENSE).
 ---
 
 *CGO and NGO are working terms coined by the Microsoft CAT team to describe the two Copilot Studio orchestration architectures. They are not official product names.*
-
-
 
