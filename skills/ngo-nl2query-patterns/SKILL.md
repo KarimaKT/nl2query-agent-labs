@@ -357,9 +357,9 @@ Step 4 — Row width
   Add ~10% for separators and formatting overhead
 
 Step 5 — Calculate N
-  target_chars = 30000   (default; increase for larger model contexts)
+  target_chars = 100000   (default; increase for larger model contexts)
   N = floor(target_chars / estimated_row_width)
-  Clamp N to [50, 200]
+  Clamp N to [50, 500]
 
   Examples:
     3 cols × 20 chars avg  →  row = 60   →  N = 500  → clamped to 200
@@ -798,9 +798,9 @@ Step 4 — Row width
   Add ~10% for separators and formatting overhead
 
 Step 5 — Calculate N
-  target_chars = 30000   (default; increase for larger model contexts)
+  target_chars = 100000   (default; increase for larger model contexts)
   N = floor(target_chars / estimated_row_width)
-  Clamp N to [50, 200]
+  Clamp N to [50, 500]
 
   Examples:
     3 cols × 20 chars avg  →  row = 60   →  N = 500  → clamped to 200
@@ -1267,6 +1267,7 @@ Write-Host "LEARNINGS.md updated."
 4. **`pac copilot push` crashes** → Switch to Dataverse API PATCH permanently (Section 4).
 5. **Skills not appearing** → Add via UI or CDP automation (Section 6). PAC CLI cannot add skills.
 6. **Wrong URL for agent** → Use `/agents/<botId>` not `/agents/designer/<botId>`.
+
 
 
 
