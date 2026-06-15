@@ -172,7 +172,6 @@ function Get-DVToken {
 
 ## PHASE 2 — Create ContosoRetail dataset
 
-Business story baked into the data: West region underperforms, Email ROI collapsing, Social surging, Beauty highest margin, 2 bad suppliers, VIP drives LTV.
 
 ```powershell
 $token = Get-PBIToken
@@ -499,3 +498,4 @@ Output after all phases complete:
 | Early Release channel required | NGO only available on Early Release as of mid-2026 |
 | ALL agents show InvalidContent error | Platform outage (not your YAML) — check a known-working agent, wait 1-4 hours |
 | Anthropic models not available | Requires Anthropic license in tenant — contact admin if Claude series not in model picker |
+

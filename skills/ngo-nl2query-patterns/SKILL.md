@@ -294,6 +294,32 @@ Note: Do NOT list column names — discover them at runtime via TOPN.
   Option B: Save PPTX outline to OneDrive.
 ```
 
+
+### Generic-first design principle
+
+The Fabric Analyst agent is designed to be **use-case agnostic at the instruction level**. This is intentional:
+
+- **Instructions** contain: tool routing, DAX rules, output format, adaptive TOPN logic — nothing specific to ContosoRetail
+- **Skills** contain: schema (table names, column types, join keys), domain context, DAX patterns for known question types
+- **Benefit:** The same agent definition deploys against any Power BI dataset — swap the skills for a different schema/domain without touching instructions or agent config
+
+This is different from the CGO approach where dataset IDs, table names, and sometimes column hints appear directly in the agent's system prompt. Putting them in skills keeps the instruction layer clean and lets subject-matter experts update domain knowledge (a skill) without touching agent configuration.
+
+**What belongs where:**
+
+| Content | Instructions | Skill |
+|---|---|---|
+| Tool routing (which tool for what) | ✅ | |
+| Dataset IDs (workspaceId, datasetId) | ✅ (just IDs) | |
+| DAX rules (TOPN, SUMX/FILTER, self-correct) | ✅ | |
+| Output format rules | ✅ | |
+| Table names | ✅ (list only) | ✅ (with column detail) |
+| Column names, types, sample values | | ✅ |
+| Business rules ("no active relationships") | ✅ (structural) | ✅ (domain-specific) |
+| Business conclusions ("Email ROI declining") | ❌ never | ❌ never in agent-facing skills |
+| Known DAX patterns for domain questions | | ✅ |
+| Pre-validated answers for testing | | ✅ (test/comparison skills only) |
+
 ### Proven DAX patterns to reference in instructions
 
 | Pattern | Use case |
@@ -708,6 +734,32 @@ Note: Do NOT list column names — discover them at runtime via TOPN.
   Option A: Save interactive HTML report to OneDrive.
   Option B: Save PPTX outline to OneDrive.
 ```
+
+
+### Generic-first design principle
+
+The Fabric Analyst agent is designed to be **use-case agnostic at the instruction level**. This is intentional:
+
+- **Instructions** contain: tool routing, DAX rules, output format, adaptive TOPN logic — nothing specific to ContosoRetail
+- **Skills** contain: schema (table names, column types, join keys), domain context, DAX patterns for known question types
+- **Benefit:** The same agent definition deploys against any Power BI dataset — swap the skills for a different schema/domain without touching instructions or agent config
+
+This is different from the CGO approach where dataset IDs, table names, and sometimes column hints appear directly in the agent's system prompt. Putting them in skills keeps the instruction layer clean and lets subject-matter experts update domain knowledge (a skill) without touching agent configuration.
+
+**What belongs where:**
+
+| Content | Instructions | Skill |
+|---|---|---|
+| Tool routing (which tool for what) | ✅ | |
+| Dataset IDs (workspaceId, datasetId) | ✅ (just IDs) | |
+| DAX rules (TOPN, SUMX/FILTER, self-correct) | ✅ | |
+| Output format rules | ✅ | |
+| Table names | ✅ (list only) | ✅ (with column detail) |
+| Column names, types, sample values | | ✅ |
+| Business rules ("no active relationships") | ✅ (structural) | ✅ (domain-specific) |
+| Business conclusions ("Email ROI declining") | ❌ never | ❌ never in agent-facing skills |
+| Known DAX patterns for domain questions | | ✅ |
+| Pre-validated answers for testing | | ✅ (test/comparison skills only) |
 
 ### Proven DAX patterns to reference in instructions
 
@@ -1215,5 +1267,6 @@ Write-Host "LEARNINGS.md updated."
 4. **`pac copilot push` crashes** → Switch to Dataverse API PATCH permanently (Section 4).
 5. **Skills not appearing** → Add via UI or CDP automation (Section 6). PAC CLI cannot add skills.
 6. **Wrong URL for agent** → Use `/agents/<botId>` not `/agents/designer/<botId>`.
+
 
 

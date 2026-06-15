@@ -27,6 +27,8 @@ This repo adds:
 
 A second NL2Query agent built with the **new Copilot Studio orchestrator** (CLICopilotRecognizer, cliagent-1.0.0) over the same ContosoRetail dataset. No topics or Power Automate flows — only Tools, Skills, and a reasoning loop.
 
+**Generic-first design:** Instructions contain only tool routing, DAX rules, and output format — nothing domain-specific. All schema and domain knowledge lives in Skills. This means the same agent definition works against any Power BI dataset: swap the Skills for a different schema without touching instructions or agent config. This is a deliberate contrast with the CGO approach, where dataset-specific context often lives in the system prompt.
+
 The `/fabric-analyst-deploy` skill deploys this agent fully programmatically (PAC CLI + Dataverse API — no manual UI steps), using the same ContosoRetail dataset as TableTalk so the two agents can be compared directly.
 
 ### 3. Agent comparison — CGO vs NGO, or any two agents
@@ -263,4 +265,5 @@ Apache 2.0 — see [LICENSE](LICENSE).
 ---
 
 *CGO and NGO are working terms coined by the Microsoft CAT team to describe the two Copilot Studio orchestration architectures. They are not official product names.*
+
 
