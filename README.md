@@ -78,7 +78,7 @@ dataset/
   build_contoso_dataset.py           ← generates ContosoRetail push dataset
 ```
 
-These skills are designed for [Clawpilot](https://aka.ms/clawpilot) — invoke with `/skill-name` in chat.
+These are markdown skill files compatible with AI assistant tools that support custom skill loading (e.g. GitHub Copilot CLI, Scout, or any assistant that reads from `~/.copilot/m-skills/`). Invoke with `/skill-name` in chat.
 
 ---
 
@@ -120,7 +120,7 @@ Runs both agents against 19 questions, scores with multiple graders, and produce
 
 Works with any two Copilot Studio agents (CGO or NGO). Provide agent paths and canvas URLs — the skill explores configs, generates grounded questions, tests, and reports.
 
-### Install skills locally (Clawpilot)
+### Install skills locally
 
 ```powershell
 Get-ChildItem ".\skills" -Directory | ForEach-Object {
@@ -265,6 +265,7 @@ Apache 2.0 — see [LICENSE](LICENSE).
 ---
 
 *CGO and NGO are working terms coined by the Microsoft CAT team to describe the two Copilot Studio orchestration architectures. They are not official product names.*
+
 
 
 
