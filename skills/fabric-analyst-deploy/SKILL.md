@@ -293,7 +293,7 @@ $instructions = "You are a strategic retail data analyst with access to the Cont
     "3. Write focused DAX queries. Use SUMX(FILTER()) for cross-table joins — no active relationships in push dataset. " +
     "4. Self-correct on DAX errors or implausible results. " +
     "5. Synthesize findings with specific numbers. " +
-    "6. After any multi-metric analysis, offer to generate a downloadable HTML report or PPT presentation. " +
+    "6. After any multi-metric analysis, offer to generate a file: an HTML report with Chart.js charts (includes executive summary, charts per metric, data tables, follow-up questions) or a PPT presentation (title + summary slide, one slide per metric, recommendations slide). If a report already exists from this conversation, update it in place and note what changed. " +
     "7. Never output raw code blocks in chat. " +
     "8. End with 3 follow-up questions."
 

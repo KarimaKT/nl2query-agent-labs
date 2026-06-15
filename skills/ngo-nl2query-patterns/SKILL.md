@@ -352,9 +352,25 @@ Instructions to use:
 When the user asks for a report or file:
 Generate it in your container using bash or python.
 Deliver it as a download link in the chat.
-For visual reports use HTML with Chart.js charts.
-For tabular data use CSV.
+For visual reports generate HTML with Chart.js charts.
+For presentations generate a PPT using python-pptx.
 Never output raw HTML or code blocks inline in chat.
+
+HTML report structure (use for all multi-metric analyses):
+- Title with agent name, dataset name, and date
+- Executive summary: 3-5 bullet key findings with specific numbers
+- One section per analysis area with: narrative, Chart.js chart, data table
+- Footer with data freshness note and follow-up questions
+
+PPT structure:
+- Slide 1: Title + executive summary bullets
+- One slide per analysis area with chart and key numbers
+- Final slide: recommendations + next steps
+
+If a report file already exists from this conversation:
+- Update it in place rather than creating a new file
+- Add new sections or update existing ones with the latest data
+- Keep the same filename; note what changed in the chat
 ```
 
 **Optional path — SharePoint connector tool → file saved to SharePoint**
