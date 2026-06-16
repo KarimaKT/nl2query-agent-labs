@@ -79,7 +79,7 @@ What you need:
 - No existing agent needed — skill creates the agent programmatically
 
 What it does:
-- Clones the nl2query-agent-labs repo (for the dataset script) if not already present
+- Clones the nl2query-agent-build-eval repo (for the dataset script) if not already present
 - Creates ContosoRetail Power BI push dataset via Python script (or reuses existing)
 - Creates New Generative Orchestrator agent shell via PAC CLI + solution import
 - Configures instructions + model via Dataverse API (PAC CLI push crashes on this architecture — see /copilot-studio-new-orchestrator Section 3)
@@ -210,4 +210,5 @@ Skills are stored as `botcomponent` records (componenttype 9) in Dataverse with 
 | Output and format rules | |
 
 **Why this split:** Instructions apply on every turn (token overhead). Skills are retrieved selectively. Putting column-level detail and DAX patterns in skills keeps instructions short and focused.
+
 

@@ -1,4 +1,4 @@
-# NL2Query Agent Labs for Copilot Studio
+# NL2Query Agent Build and Eval Automations
 
 **Auto-deploy, compare, and learn from NL2Query agents on Power BI / Fabric — built with Copilot Studio.**
 
@@ -90,7 +90,7 @@ Each skill is a markdown instruction file. Load it into your AI assistant and as
 Clone or download this repo — the skills are plain markdown files, no install needed:
 
 ```bash
-git clone https://github.com/KarimaKT/nl2query-agent-labs
+git clone https://github.com/KarimaKT/nl2query-agent-build-eval
 ```
 
 Point your AI assistant at the `skills/` folder, or copy individual skill subfolders wherever your tooling expects them. No build step, no dependencies.
@@ -275,4 +275,5 @@ Apache 2.0 — see [LICENSE](LICENSE).
 ---
 
 *CGO and NGO are working terms coined by the Microsoft CAT team to describe the two Copilot Studio orchestration architectures. They are not official product names.*
+
 
